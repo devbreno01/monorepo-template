@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Tenant {
+    id  Int  @default(autoincrement()) @id
+    name String 
+    key String? 
+    users User[]
+    posts Post[]
+    @@map("tenants")
+}
+
+model User {
+  id    Int     @default(autoincrement()) @id
+  tenant_id Int
+  email String  @unique
+  password String 
+  name  String?
+
+  tenant Tenant @relation(fields: [tenant_id],references: [id], onDelete:  Cascade)
+  posts Post[]
+  @@map("users")
+}
+
+model Post {
+  id        Int      @default(autoincrement()) @id
+  tenant_id Int
+  title     String
+  content   String?
+  published Boolean? @default(false)
+  author_id  Int
+
+  author User @relation(fields: [author_id], references: [id])
+  tenant Tenant @relation(fields: [tenant_id],references: [id], onDelete:  Cascade)
+
+  @@map("posts")
+}
+
+//$ npx prisma migrate dev --name init to run the migrations 
