@@ -9,7 +9,7 @@ export class PostsService {
   constructor(private prisma: PrismaService){}
 
   async create(createPostDto: CreatePostDto) {
-      const post = this.prisma.post.create({
+      const post = await  this.prisma.post.create({
         data:{
           title: createPostDto.title, 
           content: createPostDto.content, 
