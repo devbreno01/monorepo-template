@@ -28,8 +28,7 @@ export class PostsService {
 
   async findAll() {
     return [
-      {message: 'Olá'},
-      {data: 'Mundo'}
+      {message: 'Olá mundo'}
     ];
   }
 
