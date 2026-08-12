@@ -46,5 +46,3 @@ model Post {
 
   @@map("posts")
 }
-
-//$ npx prisma migrate dev --name init to run the migrations 
