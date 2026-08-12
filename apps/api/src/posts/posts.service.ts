@@ -27,7 +27,10 @@ export class PostsService {
   }
 
   async findAll() {
-    return `This action returns all posts`;
+    return [
+      {message: 'Olá'},
+      {data: 'Mundo'}
+    ];
   }
 
   async findOne(id: number) {
