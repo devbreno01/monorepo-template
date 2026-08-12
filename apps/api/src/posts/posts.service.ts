@@ -37,7 +37,23 @@ export class PostsService {
   }
 
   async update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+
+    console.log(updatePostDto)
+    const post = this.prisma.post.update({
+      where:{
+        id: id
+      }, 
+      data:updatePostDto,
+
+      select:{
+        id: true, 
+        content: true, 
+        title:true
+      }
+    }); 
+    
+    return post; 
+
   }
 
   async remove(id: number) {
