@@ -9,7 +9,10 @@ export class PostsController {
 
   @Post()
   create(@Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(createPostDto);
+    // return this.postsService.create(createPostDto);
+    console.log({
+      url: process.env.DATABASE_URL
+    });
   }
 
   @Get()
