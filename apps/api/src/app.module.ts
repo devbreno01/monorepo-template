@@ -7,15 +7,15 @@ import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
-            ConfigModule.forRoot({
-              isGlobal: true,
-               envFilePath: '.env',
-            }), 
-            PrismaModule, 
-            PostsModule ,   
-            AuthModule, 
-            UsersModule,
-          ],
+        ConfigModule.forRoot({
+          isGlobal: true,
+              envFilePath: '.env',
+          }),
+          PrismaModule,
+          PostsModule ,
+          AuthModule,
+          UsersModule,
+        ],
   controllers: [],
   providers: [],
 })

@@ -13,39 +13,39 @@ import { JwtConstants } from './auth.constants';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService, 
-              private jwtService : JwtService, 
+  constructor(private prisma: PrismaService,
+              private jwtService : JwtService,
               private userService: UsersService){}
-  
+
   async create(dto: CreateAuthDto){
-      //bycrpt of password 
+      //bycrpt of password
       const saltOrRounds = 10;
       const password = dto.password;
       const hash = await bcrypt.hash(password, saltOrRounds);
 
       const user = this.prisma.$transaction(async (tr) => {
-         
+
           const tenant = await tr.tenant.create({
               data:{
-                name: `Tenant ${dto.email}` 
+                name: `Tenant ${dto.email}`
               }
           })
-        
+
           const user = await tr.user.create({
             data:{
-              email: dto.email, 
-              password: hash, 
+              email: dto.email,
+              password: hash,
               tenant_id: tenant.id
             }
           })
 
       })
-     
-    
+
+
   }
-  //: <Promise{access_token: string}>
+ 
  async singIn(dto: SingnInDto){
-    const user = await this.userService.findByEmail(dto.email); 
+    const user = await this.userService.findByEmail(dto.email);
 
     if(!user){
       return [
@@ -58,13 +58,13 @@ export class AuthService {
     if(!passowrdMatch){
         throw new Error("E-mail/password obrigatório");
     }
-    
+
     const payload = {
         sub: user.id,
         email: user.email
-    }; 
+    };
 
-   
+
     return {
       access_token: await this.jwtService.signAsync(payload)
     }

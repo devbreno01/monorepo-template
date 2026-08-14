@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { SingnInDto } from './dto/singin-auth.dto';
+import { AuthGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -18,7 +19,7 @@ export class AuthController {
      }catch(e)
      {
           if (e instanceof Error) {
-            console.error("Success:", e.message); 
+            console.error("Success:", e.message);
           } else {
             console.error("An unexpected error occurred:", e);
           }
@@ -27,6 +28,14 @@ export class AuthController {
   @Post()
   singIn(@Body() dto:SingnInDto ){
       return this.authService.singIn(dto);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('profile')
+  getProfile(@Request() req){
+      return [
+        {message: "Authenticated"}
+      ]
   }
 
 }
