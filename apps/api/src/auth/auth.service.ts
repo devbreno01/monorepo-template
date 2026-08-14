@@ -5,55 +5,70 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 import { PrismaService } from 'src/prisma.service';
 
 import { JwtService } from "@nestjs/jwt"
+import { User } from 'generated/prisma/client';
+import { SingnInDto } from './dto/singin-auth.dto';
+import { compare } from "bcrypt"
+import { UsersService } from 'src/users/users.service';
+import { JwtConstants } from './auth.constants';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService, private jwtService : JwtService){}
+  constructor(private prisma: PrismaService, 
+              private jwtService : JwtService, 
+              private userService: UsersService){}
   
-  async create(dto: CreateAuthDto) {
+  async create(dto: CreateAuthDto){
       //bycrpt of password 
       const saltOrRounds = 10;
       const password = dto.password;
       const hash = await bcrypt.hash(password, saltOrRounds);
 
       const user = this.prisma.$transaction(async (tr) => {
-          //cria tenant 
+         
           const tenant = await tr.tenant.create({
               data:{
                 name: `Tenant ${dto.email}` 
               }
           })
-          //cria user
-
+        
           const user = await tr.user.create({
             data:{
               email: dto.email, 
-              password: password, 
+              password: hash, 
               tenant_id: tenant.id
             }
           })
 
       })
-      //generate jwt token 
-
-
-
-      //open transaction to register tenant before
+     
+    
   }
+  //: <Promise{access_token: string}>
+ async singIn(dto: SingnInDto){
+    const user = await this.userService.findByEmail(dto.email); 
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+    if(!user){
+      return [
+        {message: "User doens't exist"}
+      ]
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    const passowrdMatch = await compare(dto.password, user.password);
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
+    if(!passowrdMatch){
+        throw new Error("E-mail/password obrigatório");
+    }
+    
+    const payload = {
+        sub: user.id,
+        email: user.email
+    }; 
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
-  }
+   
+    return {
+      access_token: await this.jwtService.signAsync(payload)
+    }
+
+
+ }
 }
