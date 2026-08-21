@@ -3,8 +3,9 @@ import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { SingnInDto } from './dto/singin-auth.dto';
-import { AuthGuard } from './auth.guard';
+
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { request } from 'http';
 
 @Controller('auth')
 export class AuthController {
@@ -35,7 +36,7 @@ export class AuthController {
   @Get('profile')
   getProfile(@Request() req){
       return [
-        {message: "Authenticated"}
+        {request: req.user}
       ]
   }
 
